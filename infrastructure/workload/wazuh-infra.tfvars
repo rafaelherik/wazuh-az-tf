@@ -24,3 +24,11 @@ wazuh-indexer = {
   admin_username = "wazuhadmin"
 }
 
+
+wazuh-indexer = {
+  name           = "my-wazuh-dashboard-001"
+  vm_size        = "Standard_DS2_v2"
+  admin_username = "wazuhadmin"
+}
+
+
