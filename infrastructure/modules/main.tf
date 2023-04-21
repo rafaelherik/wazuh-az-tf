@@ -10,6 +10,8 @@ provider "azurerm" {
 }
 
 
+data "azurerm_client_config" "current" {
+}
 
 
 # RESOURCE GROUP
