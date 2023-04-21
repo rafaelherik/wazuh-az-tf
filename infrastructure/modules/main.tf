@@ -74,7 +74,7 @@ resource "tls_private_key" "pk" {
 resource "azurerm_key_vault_secret" "key-vault-secret" {
   name         = "wazuh-ssh-key"
   value        = tls_private_key.pk.private_key_openssh
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = azurerm_key_vault.keyvault.id
 }
 
 
