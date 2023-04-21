@@ -9,7 +9,6 @@ provider "azurerm" {
   subscription_id = var.azurerm_subscription_id
   tenant_id       = var.azurerm_tenant_id
   client_id       = var.azurerm_client_id
-  /* client_secret   = var.azurerm_client_secret */
   features {}
 }
 
@@ -65,14 +64,21 @@ resource "azurerm_key_vault" "keyvault" {
 }
 
 
-# VIRTUAL MACHINES
-
-
-
+# PRIVATE AND PUBLIC KEY
 resource "tls_private_key" "pk" {
   algorithm = "RSA"
   rsa_bits  = "4096"
 }
+
+# KEY VAULT SECRET 
+resource "azurerm_key_vault_secret" "key-vault-secret" {
+  name         = "wazuh-ssh-key"
+  value        = tls_private_key.pk.private_key_openssh
+  key_vault_id = azurerm_key_vault.example.id
+}
+
+
+# VIRTUAL MACHINES
 
 
 # WAZUH SERVER
@@ -136,3 +142,32 @@ resource "azurerm_network_interface" "wz-indexer-ni" {
 }
 
 
+
+## WAZUH DASHBOARD
+module "wazuh-dashboard" {
+  source              = "./virtual_machines"
+  name                = var.wazuh-dashboard.name
+  location            = azurerm_resource_group.wazuh-rg.location
+  resource_group_name = azurerm_resource_group.wazuh-rg.name
+  admin_username      = var.wazuh-dashboard.admin_username
+  size                = var.wazuh-dashboard.vm_size
+  os_disk = {
+    name                 = "${var.wazuh-dashboard.name}-osdisk"
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+  network_interface_ids = ["${azurerm_network_interface.wz-dashboard-ni.id}"]
+  ssh_key               = tls_private_key.pk.public_key_openssh
+}
+
+resource "azurerm_network_interface" "wz-dashboard-ni" {
+  name                = "${var.wazuh-dashboard.name}-nic"
+  location            = azurerm_resource_group.wazuh-rg.location
+  resource_group_name = azurerm_resource_group.wazuh-rg.name
+
+  ip_configuration {
+    name                          = "${var.wazuh-dashboard.name}-ipconfig"
+    subnet_id                     = azurerm_subnet.example.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
