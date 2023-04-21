@@ -13,8 +13,7 @@ permissions:
   pull-requests: write
   id-token: write
 env:
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}  
-  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }} 
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}    
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}   
   AZURE_REGION: West Europe #Region to create the Storage Account
@@ -41,8 +40,7 @@ jobs:
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}            
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}        
 
     - name: Run PowerShell script
       run: pwsh -File ./infrastructure/launchpad/setup-backend.ps1
