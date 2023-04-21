@@ -1,11 +1,11 @@
-terraform {  
-  
+terraform {
+
 }
 
 provider "azurerm" {
   subscription_id = var.azurerm_subscription_id
   tenant_id       = var.azurerm_tenant_id
-  client_id       = var.azurerm_client_id  
+  client_id       = var.azurerm_client_id
   features {}
 }
 
@@ -42,25 +42,21 @@ resource "azurerm_subnet" "example" {
 # KEYVAULT
 
 resource "azurerm_key_vault" "keyvault" {
-  name                =  var.keyvault.name
-  location            = "${azurerm_resource_group.wazuh-rg.location}"
-  resource_group_name = "${azurerm_resource_group.wazuh-rg.name}"
+  name                = var.keyvault.name
+  location            = azurerm_resource_group.wazuh-rg.location
+  resource_group_name = azurerm_resource_group.wazuh-rg.name
 
   sku_name = "standard"
-  
-  tenant_id            = "${data.azurerm_client_config.current.tenant_id}"
+
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
   enabled_for_disk_encryption = true
 
   ## Setting the permissions to the service principal
   access_policy {
-    tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-    object_id = "${data.azurerm_client_config.current.object_id}"
-    key_permissions = [
-      "get",
-      "create",
-      "delete",
-      "list"
-    ]
+    tenant_id          = data.azurerm_client_config.current.tenant_id
+    object_id          = data.azurerm_client_config.current.object_id
+    secret_permissions = ["Set", "Get", "List", "Delete", "Recover"]
+    keykey_permissions = ["Set", "Get", "List", "Delete", "Recover"]
   }
 }
 
@@ -77,7 +73,7 @@ resource "tls_private_key" "pk" {
 
 # WAZUH SERVER
 
-module "wazuh-server" {  
+module "wazuh-server" {
   source              = "./virtual_machines"
   name                = var.wazuh-server.name
   location            = azurerm_resource_group.wazuh-rg.location
@@ -85,12 +81,12 @@ module "wazuh-server" {
   admin_username      = var.wazuh-server.admin_username
   size                = var.wazuh-server.vm_size
   os_disk = {
-    name              = "${var.wazuh-server.name}-osdisk"
-    caching           = "ReadWrite"    
+    name                 = "${var.wazuh-server.name}-osdisk"
+    caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
   network_interface_ids = ["${azurerm_network_interface.wz-server-ni.id}"]
-  ssh_key = tls_private_key.pk.public_key_openssh
+  ssh_key               = tls_private_key.pk.public_key_openssh
 }
 
 resource "azurerm_network_interface" "wz-server-ni" {
@@ -100,7 +96,7 @@ resource "azurerm_network_interface" "wz-server-ni" {
 
   ip_configuration {
     name                          = "${var.wazuh-server.name}-ipconfig"
-    subnet_id                     = "${azurerm_subnet.example.id}"
+    subnet_id                     = azurerm_subnet.example.id
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -115,12 +111,12 @@ module "wazuh-indexer" {
   admin_username      = var.wazuh-indexer.admin_username
   size                = var.wazuh-indexer.vm_size
   os_disk = {
-    name              = "${var.wazuh-indexer.name}-osdisk"
-    caching           = "ReadWrite"    
+    name                 = "${var.wazuh-indexer.name}-osdisk"
+    caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
   network_interface_ids = ["${azurerm_network_interface.wz-server-ni.id}"]
-  ssh_key = tls_private_key.pk.public_key_openssh
+  ssh_key               = tls_private_key.pk.public_key_openssh
 }
 
 resource "azurerm_network_interface" "wz-indexer-ni" {
@@ -130,13 +126,13 @@ resource "azurerm_network_interface" "wz-indexer-ni" {
 
   ip_configuration {
     name                          = "${var.wazuh-indexer.name}-ipconfig"
-    subnet_id                     = "${azurerm_subnet.example.id}"
+    subnet_id                     = azurerm_subnet.example.id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 resource "local_file" "ssh_key" {
   filename = "asdfadsfasdf.pem"
-  content = tls_private_key.pk.private_key_pem
+  content  = tls_private_key.pk.private_key_pem
 }
 
