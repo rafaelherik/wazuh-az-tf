@@ -54,6 +54,13 @@ jobs:
       id: plan
       run: |
         terraform plan -no-color -var-file "../workload/wazuh-infra.tfvars" 
+      working-directory: './infrastructure/modules' 
+
+    - name: Terraform Apply
+      id: apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        terraform apply  -var-file "../workload/wazuh-infra.tfvars" -auto-approve
       working-directory: './infrastructure/modules'    
  
       
