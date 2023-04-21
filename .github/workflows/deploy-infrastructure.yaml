@@ -1,0 +1,71 @@
+name: 'Wazuh Infrastructure'
+on:
+  workflow_dispatch:  
+    inputs:
+      apply_infra:
+        type: boolean
+        description: "Apply the Infrastructure? "
+        required: true
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}  
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }} 
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}   
+  AZURE_REGION: West Europe #Region to create the Storage Account
+
+jobs:
+  terraform:
+    name: 'Terraform - Wazuh infrastructure'
+    runs-on: ubuntu-latest       
+    environment: RAFAEL_PERSONAL
+    defaults:
+      run:
+        shell: bash
+
+    steps:    
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install Azure CLI
+      run: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}            
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+    - name: Run PowerShell script
+      run: pwsh -File ./infrastructure/launchpad/setup-backend.ps1
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1      
+
+    - name: Terraform Init
+      id: init
+      run: terraform init -backend-config "../workload/wazuh-infra.tfbackend" 
+      working-directory: './infrastructure/modules'
+    
+    - name: Terraform Plan
+      id: plan
+      run: |
+        terraform plan -no-color -var-file "../workload/wazuh-infra.tfvars" 
+      working-directory: './infrastructure/modules'
+      continue-on-error: true        
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && ${{ github.event.input.apply_infra }}
+      id: apply
+      run: |
+        terraform apply  -var-file "../workload/wazuh-infra.tfvars" --auto-approve
+      working-directory: './infrastructure/modules'
+      continue-on-error: true
+      

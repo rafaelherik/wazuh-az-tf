@@ -12,6 +12,10 @@ variable "azurerm_client_id" {
   default     = null
 }
 
+variable "azurerm_client_secret"{
+  description = "value"
+  default     = null
+}
 
 variable "group" {
     description = "The Resource Group configuration."
