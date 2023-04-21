@@ -1,7 +1,5 @@
 terraform {
-  backend "azurerm" {
-
-  }
+  backend "azurerm" {}
 }
 
 provider "azurerm" {
@@ -12,18 +10,13 @@ provider "azurerm" {
   features {}
 }
 
-
-data "azurerm_client_config" "current" {
-}
-
+data "azurerm_client_config" "current" {}
 
 # RESOURCE GROUP
 resource "azurerm_resource_group" "wazuh-rg" {
   name     = var.group.name
   location = var.group.location
 }
-
-
 
 # NETWORKING
 resource "azurerm_virtual_network" "vnet" {
@@ -33,24 +26,19 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
 }
 
-
-resource "azurerm_subnet" "example" {
+resource "azurerm_subnet" "subnet" {
   name                 = "default"
   resource_group_name  = azurerm_resource_group.wazuh-rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
-
 # KEYVAULT
-
 resource "azurerm_key_vault" "keyvault" {
   name                = var.keyvault.name
   location            = azurerm_resource_group.wazuh-rg.location
   resource_group_name = azurerm_resource_group.wazuh-rg.name
-
   sku_name = "standard"
-
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   enabled_for_disk_encryption = true
 
@@ -62,7 +50,6 @@ resource "azurerm_key_vault" "keyvault" {
     key_permissions    = ["Create", "Get", "List", "Encrypt", "Decrypt", "Delete", "Import"]
   }
 }
-
 
 # PRIVATE AND PUBLIC KEY
 resource "tls_private_key" "pk" {
@@ -77,12 +64,9 @@ resource "azurerm_key_vault_secret" "key-vault-secret" {
   key_vault_id = azurerm_key_vault.keyvault.id
 }
 
-
 # VIRTUAL MACHINES
 
-
-# WAZUH SERVER
-
+## WAZUH SERVER
 module "wazuh-server" {
   source              = "./virtual_machines"
   name                = var.wazuh-server.name
@@ -140,7 +124,6 @@ resource "azurerm_network_interface" "wz-indexer-ni" {
     private_ip_address_allocation = "Dynamic"
   }
 }
-
 
 
 ## WAZUH DASHBOARD

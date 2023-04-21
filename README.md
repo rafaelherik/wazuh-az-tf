@@ -79,8 +79,6 @@ az group create --name $resourceGroupName --location $location --subscription $s
 az storage account create --name $storageAccountName --resource-group $resourceGroupName --location $location --sku Standard_LRS --subscription $subscriptionId
 
 az storage container create --name $containerName --account-name $storageAccountName --account-key (az storage account keys list --resource-group $resourceGroupName --account-name $storageAccountName --subscription $subscriptionId --query "[0].value" -o tsv) --public-access off --subscription $subscriptionId
-
-
 ```
 
 
@@ -92,8 +90,6 @@ container_name       = "my-container"
 resource_group_name  = "my-resource-group"
 key                  = "my-tfstate.tfstate"
 use_oidc             = true
-
-
 ```
 
 
