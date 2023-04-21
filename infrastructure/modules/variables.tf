@@ -29,7 +29,10 @@ variable "wazuh-indexer" {
   description = "The Wazuh indexer configuration."
 }
 
-
 variable "vnet" {
   description = "The Virtual Network configuration."
+}
+
+variable "keyvault" {
+  description = "The KeyVault configuration."
 }

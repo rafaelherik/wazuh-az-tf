@@ -3,7 +3,9 @@ group = {
     location = "West Europe"
 }
 
-
+keyvault = {
+  name = "my-wz-security-kv"
+}
 vnet = {
     name = "wazuh-vnet"
 }
