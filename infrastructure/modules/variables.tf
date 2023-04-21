@@ -29,6 +29,11 @@ variable "wazuh-indexer" {
   description = "The Wazuh indexer configuration."
 }
 
+variable "wazuh-dashboard" {
+  description = "The Wazuh dashboard configuration."
+}
+
+
 variable "vnet" {
   description = "The Virtual Network configuration."
 }

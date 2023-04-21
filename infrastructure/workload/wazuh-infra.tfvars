@@ -25,7 +25,7 @@ wazuh-indexer = {
 }
 
 
-wazuh-indexer = {
+wazuh-dashboard = {
   name           = "my-wazuh-dashboard-001"
   vm_size        = "Standard_DS2_v2"
   admin_username = "wazuhadmin"
