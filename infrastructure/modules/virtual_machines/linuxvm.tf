@@ -65,7 +65,7 @@ variable "source_image_reference" {
   default = {
     publisher = "Canonical"
     offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
+    sku       = "22.04-LTS"
     version   = "latest"
   }  
 }
