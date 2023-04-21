@@ -1,4 +1,4 @@
 storage_account_name = "stwazuhinfrabackend"
 container_name       = "tfstate"
 resource_group_name  = "rg-wazuh-infra-backend"
-key                  = "wazuh.tfstate"
+key                  = "wazuh-infra.tfstate"

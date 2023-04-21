@@ -117,7 +117,7 @@ module "wazuh-indexer" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  network_interface_ids = ["${azurerm_network_interface.wz-server-ni.id}"]
+  network_interface_ids = ["${azurerm_network_interface.wz-indexer-ni.id}"]
   ssh_key               = tls_private_key.pk.public_key_openssh
 }
 
@@ -133,8 +133,4 @@ resource "azurerm_network_interface" "wz-indexer-ni" {
   }
 }
 
-resource "local_file" "ssh_key" {
-  filename = "asdfadsfasdf.pem"
-  content  = tls_private_key.pk.private_key_pem
-}
 
